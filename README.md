@@ -1,2 +1,2 @@
 # Zabbix-Meraki-Discovery
-Discover all of your orgs, networks, and devices via the Meraki API.  
+Discover all of your orgs, networks, and devices with the Meraki API.  
