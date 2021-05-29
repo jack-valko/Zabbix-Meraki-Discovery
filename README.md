@@ -1,7 +1,7 @@
 # Zabbix-Meraki-Discovery
 Monitor all of your Meraki devices with Zabbix using the Meraki API and SNMP.  This template uses the script feature in Zabbix 5 to perform the heavy lifting against the Meraki JSON API to discover your organizations, networks, and devices.  
 
-## Prerequisite
+## Prerequisites
 * Zabbix 5.2
 * echo.something in *externalscripts* directory
 * Template 'ICMP Ping'
