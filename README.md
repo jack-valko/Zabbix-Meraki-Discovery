@@ -1,5 +1,5 @@
 # Zabbix-Meraki-Discovery
-Monitor all of your Meraki devices with Zabbix using the Meraki API and SNMP.  This template uses the script feature in Zabbix 5 to perform the heavy lifting against the Meraki JSON API to discover your organizations, networks, and devices.  No external scripts are required for this template.
+Monitor all of your Meraki devices with Zabbix using the Meraki API and SNMP.  This template uses the script feature in Zabbix 5 to perform the heavy lifting against the Meraki JSON API to discover your organizations, networks, and devices.  
 
 ## Prequesites
 * Zabbix 5.2
