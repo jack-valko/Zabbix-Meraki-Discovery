@@ -15,7 +15,7 @@ Monitor all of your organizations, networks, and devices with Zabbix using the M
 3. Click 'Choose File" and select your download of Zabbix-Meraki-Discovery.xml. __You must also click the checkbox to Create New Hosts__
 4. Click the 'Import' button
 
-If any errors appear, congratulations!  You have an install I have not tested.  Please file a bug.
+If any errors appear, congratulations!  You have an install I have not tested.  [Please file a bug.](https://github.com/jack-valko/Zabbix-Meraki-Discovery/issues/new)
 
 ## Configuration
 1. In the Zabbix UI, navigate to Configuration > Hosts
