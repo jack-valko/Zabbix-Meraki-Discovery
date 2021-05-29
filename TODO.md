@@ -6,5 +6,6 @@
 2. Add device specific items for Cellular Gateway, update device discovery
 3. Add device specific items for Switches
 4. Eliminate SNMP and go to Meraki Cloud for interface stats (hmmmm?)
+5. Create Dashboard with discovered devices
 
-If you want to add to this list please [file it as a bug]
+If you want to add to this list please [file it as a bug](https://github.com/jack-valko/Zabbix-Meraki-Discovery/issues/new)
