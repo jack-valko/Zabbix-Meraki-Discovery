@@ -15,6 +15,8 @@ Monitor all of your Meraki devices with Zabbix using the Meraki API and SNMP.  T
 3. Click 'Choose File" and select your download of Zabbix-Meraki-Discovery.xml. __You must also click the checkbox to Create New Hosts__
 4. Click the 'Import' button
 
+![Import Image](https://github.com/jack-valko/Zabbix-Meraki-Discovery/raw/main/zabbix-meraki-template-import.jpeg)
+
 If any errors appear, congratulations!  You have an install I have not tested.  [Please file a bug.](https://github.com/jack-valko/Zabbix-Meraki-Discovery/issues/new)
 
 ## Configuration
