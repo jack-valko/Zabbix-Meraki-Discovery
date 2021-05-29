@@ -20,7 +20,7 @@ After discovery each device will be added to a new hostgroup in the form of *"Me
 ## Install
 1. Download Zabbix-Meraki-Discovery.xml from this repo
 2. In the Zabbix UI, navigate to Configuration > Templates.  Click Import.
-3. Click 'Choose File" and select your download of Zabbix-Meraki-Discovery.xml. __You must also click the checkbox to Create New Hosts__
+3. Click the 'Choose File' button and select your download of Zabbix-Meraki-Discovery.xml. __You must also click the checkbox to Create New Hosts__
 4. Click the 'Import' button
 
 ![Import Image](https://github.com/jack-valko/Zabbix-Meraki-Discovery/raw/main/zabbix-meraki-template-import.jpeg)
