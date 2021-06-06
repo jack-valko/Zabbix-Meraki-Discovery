@@ -7,6 +7,6 @@
 3. Add device specific items for Switches
 4. Eliminate SNMP and go to Meraki Cloud for interface stats (hmmmm?)
 5. Create Dashboard with discovered devices
-6. Backport template to Zabbix 5.0
+6. Add "Networks" hosts
 
 If you want to add to this list please [file it as a bug](https://github.com/jack-valko/Zabbix-Meraki-Discovery/issues/new)
