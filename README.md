@@ -1,5 +1,5 @@
 # Zabbix Meraki Discovery
-Monitor all of your Meraki devices with Zabbix using the Meraki API and SNMP.  This template uses the script feature in Zabbix 5 to perform the heavy lifting against the Meraki JSON API to discover your organizations, networks, and devices.  
+Monitor all of your Meraki devices with Zabbix using the Meraki API and SNMP.  This template uses the script feature in Zabbix 5.2 and later to perform the heavy lifting against the Meraki JSON API to discover your organizations, networks, and devices.  
 
 ## What's inside
 The xml contains three objects, a Cloud Template (*Meraki Cloud Service*), a Device Template (*Meraki Device*), and a Host (*Meraki Cloud*).
@@ -10,14 +10,14 @@ The xml contains three objects, a Cloud Template (*Meraki Cloud Service*), a Dev
 After discovery each device will be added to a new hostgroup in the form of *"Meraki Organization Name/Meraki Network Name"*.  Each host is also added to a new hostgroup "Discovered Meraki Devices".
 
 ## Prerequisites
-* Zabbix 5.2
+* Zabbix 5.2 or 5.4
 * echo.something in *externalscripts* directory
 * Template 'ICMP Ping'
 * Template 'Interfaces SNMP'
 * [Your Meraki API Key](https://documentation.meraki.com/General_Administration/Other_Topics/Cisco_Meraki_Dashboard_API#Enable_API_access)
 * [Enable SNMP in your Meraki environment in Network-wide > General > Reporting](https://documentation.meraki.com/General_Administration/Monitoring_and_Reporting/SNMP_Overview_and_Configuration#Configuration)
 
-## Install
+## 5.2 Install
 1. Download Zabbix-Meraki-Discovery.xml from this repo
 2. In the Zabbix UI, navigate to Configuration > Templates.  Click Import.
 3. Click the 'Choose File' button and select your download of Zabbix-Meraki-Discovery.xml. __You must also click the checkbox to Create New Hosts__
@@ -26,6 +26,15 @@ After discovery each device will be added to a new hostgroup in the form of *"Me
 ![Import Image](https://github.com/jack-valko/Zabbix-Meraki-Discovery/raw/main/zabbix-meraki-template-import.jpeg)
 
 If any errors appear, congratulations!  You have an install I have not tested.  [Please file a bug.](https://github.com/jack-valko/Zabbix-Meraki-Discovery/issues/new)
+
+## 5.4 Install
+1. Download Zabbix-Meraki-Discovery.xml from this repo
+2. In the Zabbix UI, navigate to Configuration > Templates.  Click Import.
+3. Click the 'Choose File' button and select your download of Zabbix-Meraki-Discovery.xml
+4. Click the 'Import' button.
+5. In the Zabbix UI, navigate to Configuration > Hosts.  Click Import.
+6. Click the 'Choose File' button and select your download of Zabbix-Meraki-Discovery.xml
+7. Click the 'Import' button
 
 ## Configuration
 1. In the Zabbix UI, navigate to Configuration > Hosts
