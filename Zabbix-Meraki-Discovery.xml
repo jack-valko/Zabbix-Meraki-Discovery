@@ -254,6 +254,60 @@ return(JSON.stringify(resultString));</params>
                         </application>
                     </applications>
                 </item>
+                <item>
+                    <name>Time since last check-in</name>
+                    <type>SCRIPT</type>
+                    <key>time-last-checkin[{$SERIAL}]</key>
+                    <delay>2m</delay>
+                    <units>s</units>
+                    <params>// get last check-in time
+var apikey = '{$APIKEY}';
+var orgId = '{$ORG}';
+var serial = '{$SERIAL}';
+
+var timeNowSeconds = new Date() / 1000 | 0;
+var checkInTimeSeconds = 0;
+
+var request = new CurlHttpRequest();
+var headerString = 'X-Cisco-Meraki-API-Key: ' + apikey;
+request.AddHeader(headerString);
+
+var requestString = 'https://api-mp.meraki.com/api/v1/organizations/' + orgId + '/devices/statuses';
+var dev_response = request.Get(requestString);
+var dev_json = JSON.parse(dev_response);
+
+// find lastReportedAt timestamp for this device
+for (var dev=0; dev&lt;dev_json.length; dev++) {
+   // bail if offline
+   if (dev_json[dev].status == 'offline') { continue; }
+
+   if (dev_json[dev].serial == serial) {
+      var checkInString = dev_json[dev].lastReportedAt;
+      checkInTimeSeconds = Date.parse(checkInString) / 1000 | 0;
+      break;
+   }
+}
+
+// return number of seconds since last check-in
+return(timeNowSeconds - checkInTimeSeconds);</params>
+                    <description>Computed number of seconds to last device check in</description>
+                    <timeout>10s</timeout>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Device Info</value>
+                        </tag>
+                    </tags>
+                    <triggers>
+                        <trigger>
+                            <expression>last(/Meraki Device/time-last-checkin[{$SERIAL}])&gt;300</expression>
+                            <name>{HOST.HOST} late for check-in</name>
+                            <opdata>{ITEM.LASTVALUE1}</opdata>
+                            <priority>WARNING</priority>
+                            <description>Device hasn't checked-in for over 5 minutes.</description>
+                        </trigger>
+                    </triggers>
+                </item>
             </items>
             <discovery_rules>
                 <discovery_rule>
