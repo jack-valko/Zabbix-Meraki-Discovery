@@ -38,7 +38,7 @@ If any errors appear, congratulations!  You have an install I have not tested.  
 
 ![Import Image](https://github.com/jack-valko/Zabbix-Meraki-Discovery/raw/main/zabbix-54-template-import.jpeg)
 
-5. A confirmation screen will pop up with a template navigation bar on the left and a summary of changed in green.   Click the 'Import' button again to confirm. 
+5. A confirmation screen will pop up with a summary of changes.  Click the 'Import' button again to confirm. 
 
 ![Import Image](https://github.com/jack-valko/Zabbix-Meraki-Discovery/raw/main/zabbix-54-template-import-confirm.jpeg)
 
