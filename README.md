@@ -35,9 +35,18 @@ If any errors appear, congratulations!  You have an install I have not tested.  
 2. In the Zabbix UI, navigate to Configuration > Templates.  Click Import.
 3. Click the 'Choose File' button and select your download of Zabbix-Meraki-Discovery.xml
 4. Click the 'Import' button.
-5. In the Zabbix UI, navigate to Configuration > Hosts.  Click Import.
-6. Click the 'Choose File' button and select your download of Zabbix-Meraki-Discovery.xml
-7. Click the 'Import' button
+
+![Import Image](https://github.com/jack-valko/Zabbix-Meraki-Discovery/raw/main/zabbix-54-template-import.jpeg)
+
+5. A confirmation screen will pop up with a template navigation bar on the left and a summary of changed in green.   Click the 'Import' button again to confirm. 
+
+![Import Image](https://github.com/jack-valko/Zabbix-Meraki-Discovery/raw/main/zabbix-54-template-import-confirm.jpeg)
+
+6. In the Zabbix UI, navigate to Configuration > Hosts.  Click Import.
+7. Click the 'Choose File' button and select your download of Zabbix-Meraki-Discovery.xml
+8. Click the 'Import' button
+
+![Import Image](https://github.com/jack-valko/Zabbix-Meraki-Discovery/raw/main/zabbix-54-host-import.jpeg)
 
 ## Configuration
 1. In the Zabbix UI, navigate to Configuration > Hosts
