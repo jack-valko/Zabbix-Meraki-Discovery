@@ -99,7 +99,7 @@ for (var org=0; org&lt;org_json.length; org++) {
       // if there is still no #LANIP this is most likely an MX250
       // gateway.  Set #LANIP to publicIp.  if #LANIP still
       // can't be found, bail on this device
-      if (!object["{#LANIP}"] && dev_json[dev].publicIp) {
+      if (!object["{#LANIP}"] &amp;&amp; dev_json[dev].publicIp) {
          object["{#LANIP}"] = dev_json[dev].publicIp;
       }
       if (!object[&quot;{#LANIP}&quot;]) { continue; }
