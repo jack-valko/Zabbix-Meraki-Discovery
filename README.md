@@ -9,6 +9,9 @@ The xml contains three objects, a Cloud Template (*Meraki Cloud Service*), a Dev
 
 After discovery each device will be added to a new hostgroup in the form of *"Meraki Organization Name/Meraki Network Name"*.  Each host is also added to a new hostgroup "Discovered Meraki Devices".
 
+## What's new
+* Now discovers MX250 gateways
+
 ## Prerequisites
 * Zabbix 5.2 or 5.4
 * echo.something in *externalscripts* directory
