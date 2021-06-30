@@ -34,7 +34,7 @@ If any errors appear, congratulations!  You have an install I have not tested.  
 1. Download Zabbix-Meraki-Discovery.xml from this repo
 2. In the Zabbix UI, navigate to Configuration > Templates.  Click Import.
 3. Click the 'Choose File' button and select your download of Zabbix-Meraki-Discovery.xml
-4. Click the 'Import' button.
+4. Click the 'Import' button
 
 ![Import Image](https://github.com/jack-valko/Zabbix-Meraki-Discovery/raw/main/zabbix-54-template-import.jpeg)
 
