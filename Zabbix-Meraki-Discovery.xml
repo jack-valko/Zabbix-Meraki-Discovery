@@ -291,16 +291,15 @@ for (var dev=0; dev&lt;dev_json.length; dev++) {
 // return number of seconds since last check-in
 return(timeNowSeconds - checkInTimeSeconds);</params>
                     <description>Computed number of seconds to last device check in</description>
+                    <applications>
+                        <application>
+                            <name>Device Info</name>
+                        </application>
+                    </applications>
                     <timeout>10s</timeout>
-                    <tags>
-                        <tag>
-                            <tag>Application</tag>
-                            <value>Device Info</value>
-                        </tag>
-                    </tags>
                     <triggers>
                         <trigger>
-                            <expression>last(/Meraki Device/time-last-checkin[{$SERIAL}])&gt;300</expression>
+                            <expression>{last()}&gt;300</expression>
                             <name>{HOST.HOST} late for check-in</name>
                             <opdata>{ITEM.LASTVALUE1}</opdata>
                             <priority>WARNING</priority>
