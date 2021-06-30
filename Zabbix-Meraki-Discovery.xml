@@ -83,8 +83,7 @@ for (var org=0; org&lt;org_json.length; org++) {
       }
 
       // if there is no lanIP this is probably an appliance, 
-      // grab its IP from the networks object.  if lanIp still
-      // can't be found, bail on this device
+      // grab its IP from the networks object.  
       if (!dev_json[dev].lanIp) {
          for (var net=0; net&lt;networks.length; net++) {
             if (networks[net].networkId == dev_json[dev].networkId) {
@@ -95,6 +94,13 @@ for (var org=0; org&lt;org_json.length; org++) {
       }
       else {
          object[&quot;{#LANIP}&quot;] = dev_json[dev].lanIp;
+      }
+                        
+      // if there is still no #LANIP this is most likely an MX250
+      // gateway.  Set #LANIP to publicIp.  if #LANIP still
+      // can't be found, bail on this device
+      if (!object["{#LANIP}"] && dev_json[dev].publicIp) {
+         object["{#LANIP}"] = dev_json[dev].publicIp;
       }
       if (!object[&quot;{#LANIP}&quot;]) { continue; }
 
