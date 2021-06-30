@@ -22,7 +22,7 @@ After discovery each device will be added to a new hostgroup in the form of *"Me
 * [Your Meraki API Key](https://documentation.meraki.com/General_Administration/Other_Topics/Cisco_Meraki_Dashboard_API#Enable_API_access)
 * [Enable SNMP in your Meraki environment in Network-wide > General > Reporting](https://documentation.meraki.com/General_Administration/Monitoring_and_Reporting/SNMP_Overview_and_Configuration#Configuration)
 
-## 5.2 Install
+## Zabbix 5.2 Install
 1. Download Zabbix-Meraki-Discovery.xml from this repo
 2. In the Zabbix UI, navigate to Configuration > Templates.  Click Import.
 3. Click the 'Choose File' button and select your download of Zabbix-Meraki-Discovery.xml. __You must also click the checkbox to Create New Hosts__
@@ -32,7 +32,7 @@ After discovery each device will be added to a new hostgroup in the form of *"Me
 
 If any errors appear, congratulations!  You have an install I have not tested.  [Please file a bug.](https://github.com/jack-valko/Zabbix-Meraki-Discovery/issues/new)
 
-## 5.4 Install
+## Zabbix 5.4 Install
 1. Download Zabbix-Meraki-Discovery.xml from this repo
 2. In the Zabbix UI, navigate to Configuration > Templates.  Click Import.
 3. Click the 'Choose File' button and select your download of Zabbix-Meraki-Discovery.xml
