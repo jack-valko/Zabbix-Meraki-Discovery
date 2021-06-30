@@ -1,5 +1,8 @@
 # Zabbix Meraki Discovery
-Monitor all of your Meraki devices with Zabbix using the Meraki API and SNMP.  This template uses the script feature in Zabbix 5.2 and later to perform the heavy lifting against the Meraki JSON API to discover your organizations, networks, and devices.  
+Monitor all of your Meraki devices with Zabbix using the Meraki API and SNMP.  This template uses the script feature in Zabbix 5.2 and later to perform the heavy lifting against the Meraki JSON API to discover your organizations, networks, and devices.
+
+## What's new
+* Now discovers MX250 gateways
 
 ## What's inside
 The xml contains three objects, a Cloud Template (*Meraki Cloud Service*), a Device Template (*Meraki Device*), and a Host (*Meraki Cloud*).
@@ -8,9 +11,6 @@ The xml contains three objects, a Cloud Template (*Meraki Cloud Service*), a Dev
 * *Meraki Cloud* - This host can be assigned to a Zabbix server or proxy of your choice.  You'll add your API key here (see below).  The only template applied to this host is the *Meraki Cloud Service* template.  This layout allows independent development of the template and flexibility to assign this workload within your Zabbix environment as you see fit.
 
 After discovery each device will be added to a new hostgroup in the form of *"Meraki Organization Name/Meraki Network Name"*.  Each host is also added to a new hostgroup "Discovered Meraki Devices".
-
-## What's new
-* Now discovers MX250 gateways
 
 ## Prerequisites
 * Zabbix 5.2 or 5.4
