@@ -3,6 +3,7 @@ Monitor all of your Meraki devices with Zabbix using the Meraki API and SNMP.  T
 
 ## What's new
 * Now discovers MX250 gateways
+* Alerts if a Meraki device hasn't checked into the API for over 5 minutes
 
 ## What's inside
 The xml contains three objects, a Cloud Template (*Meraki Cloud Service*), a Device Template (*Meraki Device*), and a Host (*Meraki Cloud*).
