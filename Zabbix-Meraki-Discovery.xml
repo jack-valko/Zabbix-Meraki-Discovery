@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>5.2</version>
-    <date>2021-05-25T03:17:13Z</date>
+    <date>2021-07-30T00:53:00Z</date>
     <groups>
         <group>
             <name>Discovered Meraki Devices</name>
@@ -67,7 +67,12 @@ for (var org=0; org&lt;org_json.length; org++) {
 
       // create object
       var object = { };
-      object[&quot;{#HOSTNAME}&quot;] = dev_json[dev].name.toLowerCase();
+      if (!dev_json[dev].name) {
+         object[&quot;{#HOSTNAME}&quot;] = dev_json[dev].serial;
+      }
+      else {
+         object[&quot;{#HOSTNAME}&quot;] = dev_json[dev].name.toLowerCase();
+      }
       object[&quot;{#SERIAL}&quot;] = dev_json[dev].serial;
       object[&quot;{#NETWORKID}&quot;] = dev_json[dev].networkId;
       object[&quot;{#ORG}&quot;] = org_json[org].id;
@@ -99,8 +104,8 @@ for (var org=0; org&lt;org_json.length; org++) {
       // if there is still no #LANIP this is most likely an MX250
       // gateway.  Set #LANIP to publicIp.  if #LANIP still
       // can't be found, bail on this device
-      if (!object["{#LANIP}"] &amp;&amp; dev_json[dev].publicIp) {
-         object["{#LANIP}"] = dev_json[dev].publicIp;
+      if (!object[&quot;{#LANIP}&quot;] &amp;&amp; dev_json[dev].publicIp) {
+         object[&quot;{#LANIP}&quot;] = dev_json[dev].publicIp;
       }
       if (!object[&quot;{#LANIP}&quot;]) { continue; }
 
