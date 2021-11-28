@@ -29,6 +29,7 @@ After discovery each device will be added to a new hostgroup in the form of *"Me
 * [Enable SNMP in your Meraki environment in Network-wide > General > Reporting](https://documentation.meraki.com/General_Administration/Monitoring_and_Reporting/SNMP_Overview_and_Configuration#Configuration)
 
 ## Zabbix 5.2 Install
+##### This release is obsolete and unsupported.  Please upgrade to Zabbix 5.4.
 1. Download Zabbix-Meraki-Discovery.xml from this repo
 2. In the Zabbix UI, navigate to Configuration > Templates.  Click Import.
 3. Click the 'Choose File' button and select your download of Zabbix-Meraki-Discovery.xml. __You must also click the checkbox to Create New Hosts__
