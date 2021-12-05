@@ -2,6 +2,10 @@
 Monitor all of your Meraki devices with Zabbix using the Meraki API and SNMP.  This template uses the script feature in Zabbix 5.2 and later to perform the heavy lifting against the Meraki JSON API to discover your organizations, networks, and devices.
 
 ## What's new
+##### December 4, 2021
+* BUG: SNMP Interfaces template is overdeployed, verified, fix in development
+* BUG: Template can't discover very large meraki organizations due to RangeError, verified, fix in development
+
 ##### November 28, 2021
 * Verified working on Zabbix 6 Alpha 7 
 
