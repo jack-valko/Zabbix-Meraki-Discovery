@@ -27,6 +27,7 @@ After discovery each device will be added to a new hostgroup in the form of *"Me
 * Template 'Interfaces SNMP'
 * [Your Meraki API Key](https://documentation.meraki.com/General_Administration/Other_Topics/Cisco_Meraki_Dashboard_API#Enable_API_access)
 * [Enable SNMP in your Meraki environment in Network-wide > General > Reporting](https://documentation.meraki.com/General_Administration/Monitoring_and_Reporting/SNMP_Overview_and_Configuration#Configuration)
+* [Set your {$SNMP_COMMUNITY} macro value in the Zabbix UI](https://www.zabbix.com/documentation/current/en/manual/web_interface/frontend_sections/administration/general#macros) to the same string you entered in the previous step
 
 ## Zabbix 5.2 Install
 ##### This release is obsolete and unsupported.  Please upgrade to Zabbix 5.4.
