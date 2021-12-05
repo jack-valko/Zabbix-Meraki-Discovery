@@ -42,8 +42,6 @@ After discovery each device will be added to a new hostgroup in the form of *"Me
 
 ![Import Image](https://github.com/jack-valko/Zabbix-Meraki-Discovery/raw/main/zabbix-meraki-template-import.jpeg)
 
-If any errors appear, congratulations!  You have an install I have not tested.  [Please file a bug.](https://github.com/jack-valko/Zabbix-Meraki-Discovery/issues/new)
-
 ## Zabbix 5.4 Install
 1. Download Zabbix-Meraki-Discovery.xml from this repo
 2. In the Zabbix UI, navigate to Configuration > Templates.  Click Import.
@@ -61,6 +59,8 @@ If any errors appear, congratulations!  You have an install I have not tested.  
 8. Click the 'Import' button
 
 ![Import Image](https://github.com/jack-valko/Zabbix-Meraki-Discovery/raw/main/zabbix-54-host-import.jpeg)
+
+If any errors appear, congratulations!  You have an install I have not tested.  [Please file a bug.](https://github.com/jack-valko/Zabbix-Meraki-Discovery/issues/new)
 
 ## Configuration
 1. In the Zabbix UI, navigate to Configuration > Hosts
