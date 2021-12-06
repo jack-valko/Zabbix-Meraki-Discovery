@@ -79,7 +79,7 @@ Discovery is designed not to burden the Meraki API with a lot of traffic, so it 
 
 Running by hand will take a few minutes to complete and about an hour for all SNMP data to start trickling in.
 
-## Meraki and Zabbix Interfaces SNMP
+## Monitoring Meraki devices with Interfaces SNMP
 The templates uses SNMP to monitor individual Meraki devices, it does not use the Meraki Cloud SNMP. You should keep in mind:
 1. Your {$SNMP_COMMUNITY} macro must match the SNMP string you entered into your Meraki Dashboard in [Network-wide > General > Reporting](https://documentation.meraki.com/General_Administration/Monitoring_and_Reporting/SNMP_Overview_and_Configuration#Configuration)
 2. Not all Meraki devices support SNMP, the template attempts to take this into account
