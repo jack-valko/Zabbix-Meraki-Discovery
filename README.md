@@ -83,6 +83,6 @@ Running by hand will take a few minutes to complete and about an hour for all SN
 The templates uses SNMP to monitor individual Meraki devices, it does not use the Meraki Cloud SNMP. You should keep in mind:
 1. Your {$SNMP_COMMUNITY} macro must match the SNMP string you entered into your Meraki Dashboard in [Network-wide > General > Reporting](https://documentation.meraki.com/General_Administration/Monitoring_and_Reporting/SNMP_Overview_and_Configuration#Configuration)
 2. Not all Meraki devices support SNMP, the template attempts to take this into account
-3. The network between your Zabbix server or proxy will need to allow UDP 161 (snmp)
+3. The network between your Meraki devices and your Zabbix server or proxy will need to allow UDP 161 (snmp)
 4. Your meraki devices will need to have unique LAN ip addresses
 
