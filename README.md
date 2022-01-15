@@ -4,7 +4,7 @@ Monitor all of your Meraki devices with Zabbix using the Meraki API and SNMP.  T
 ## What's new
 ##### December 4, 2021
 * BUG: SNMP Interfaces template is overdeployed (issue #11), verified, fix in development
-* BUG: Template can't discover very large meraki organizations due to RangeError (issue #12), verified, fix in development
+* BUG: Template can't discover very large meraki organizations due to RangeError (issue #12 and #16), verified, fix in development
 
 ##### November 28, 2021
 * Verified working on Zabbix 6 Alpha 7 
