@@ -2,6 +2,9 @@
 Monitor all of your Meraki devices with Zabbix using the Meraki API and SNMP.  This template uses the script feature in Zabbix 5.2 and later to perform the heavy lifting against the Meraki JSON API to discover your organizations, networks, and devices.
 
 ## What's new
+##### January 15, 2022
+* BETA: Beta template release for 6.0 and later
+
 ##### December 4, 2021
 * BUG: SNMP Interfaces template is overdeployed (issue #11), verified, fix in development
 * BUG: Template can't discover very large meraki organizations due to RangeError (issue #12 and #16), verified, fix in development
@@ -25,7 +28,7 @@ The xml contains three objects, a Cloud Template (*Meraki Cloud Service*), a Dev
 After discovery each device will be added to a new hostgroup in the form of *"Meraki Organization Name/Meraki Network Name"*.  Each host is also added to a new hostgroup "Discovered Meraki Devices".
 
 ## Prerequisites
-* Zabbix 5.2 or 5.4
+* Zabbix 5.2, 5.4, 6.0 Beta
 * echo.something in *externalscripts* directory
 * Template 'ICMP Ping'
 * Template 'Interfaces SNMP'
@@ -56,6 +59,27 @@ After discovery each device will be added to a new hostgroup in the form of *"Me
 
 6. In the Zabbix UI, navigate to Configuration > Hosts.  Click Import.
 7. Click the 'Choose File' button and select your download of Zabbix-Meraki-Discovery.xml
+8. Click the 'Import' button
+
+![Import Image](https://github.com/jack-valko/Zabbix-Meraki-Discovery/raw/main/zabbix-54-host-import.jpeg)
+
+If any errors appear, congratulations!  You have an install I have not tested.  [Please file a bug.](https://github.com/jack-valko/Zabbix-Meraki-Discovery/issues/new)
+
+## Zabbix 6.0 Beta Install
+##### This release candidate contains fixes for open issues but is not intended for production environments.
+1. Download Zabbix-Meraki-Discovery-6-Beta.xml from this repo
+2. In the Zabbix UI, navigate to Configuration > Templates.  Click Import.
+3. Click the 'Choose File' button and select your download of Zabbix-Meraki-Discovery-6-Beta.xml
+4. Click the 'Import' button
+
+![Import Image](https://github.com/jack-valko/Zabbix-Meraki-Discovery/raw/main/zabbix-54-template-import.jpeg)
+
+5. A confirmation widget will pop-up with a summary of changes.  Click the 'Import' button again to confirm. 
+
+![Import Image](https://github.com/jack-valko/Zabbix-Meraki-Discovery/raw/main/zabbix-54-template-import-confirm.jpeg)
+
+6. In the Zabbix UI, navigate to Configuration > Hosts.  Click Import.
+7. Click the 'Choose File' button and select your download of Zabbix-Meraki-Discovery-6-Beta.xml
 8. Click the 'Import' button
 
 ![Import Image](https://github.com/jack-valko/Zabbix-Meraki-Discovery/raw/main/zabbix-54-host-import.jpeg)
