@@ -9,7 +9,7 @@ Monitor all of your Meraki devices with Zabbix using the Meraki API and SNMP.  T
 * ENHANCEMENT: Reduced load on Meraki API with caching
 * FIX: Trigger warning on last check-in increased to 10 minutes
 * ENHANCEMENT: Use of external scripts deprecated in favor of native Zabbix script
-* Verified to work on Zabbix 6.0 Beta
+* Verified to work on Zabbix 6.0 Beta 1
 * Support for Zabbix 5.2 has been dropped
 
 ##### December 4, 2021
