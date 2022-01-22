@@ -1,13 +1,14 @@
 # Zabbix Meraki Discovery
-Monitor all of your Meraki devices with Zabbix using the Meraki API and SNMP.  This template uses the script feature in Zabbix 5.4 and later to perform the heavy lifting against the Meraki JSON API to discover your organizations, networks, and devices.
+Monitor all of your Meraki devices with Zabbix using the Meraki API and SNMP.  This template uses the script discovery feature in Zabbix 5.4 and later to perform the heavy lifting against the Meraki Dashboard API to discover your organizations, networks, and devices.
 
 ## What's new
 ##### January 22, 2022
 * FIX: Improved support for large Meraki networks
 * FIX: SNMP Interfaces template only added to Meraki devices that support SNMP
-* Reduced load on Meraki API with caching
-* Trigger warning on last check-in increased to 10 minutes
-* Use of external scripts deprecated in favor of native Zabbix script
+* FIX: Discovery now ignores offline organizations and devices
+* ENHANCEMENT: Reduced load on Meraki API with caching
+* FIX: Trigger warning on last check-in increased to 10 minutes
+* ENHANCEMENT: Use of external scripts deprecated in favor of native Zabbix script
 * Verified to work on Zabbix 6.0 Beta
 * Support for Zabbix 5.2 has been dropped
 
@@ -25,7 +26,7 @@ Monitor all of your Meraki devices with Zabbix using the Meraki API and SNMP.  T
 * Now discovers MX250 gateways
 * Alerts if a Meraki device hasn't checked into the API for over 5 minutes
 
-## What's inside
+## What's Inside
 The xml contains three objects, a Cloud Template (*Meraki Cloud Service*), a Device Template (*Meraki Device*), and a Host (*Meraki Cloud*).
 * *Meraki Cloud Service* - This template contains the script code to contact the Meraki API and discover your organization(s), network(s), and device(s).  It contains a Host Prototype object for each discovered device.
 * *Meraki Device* - This template is assigned to each discovered Meraki device, it will run additional discovery on the device to determine type and may create additional items.
@@ -77,7 +78,7 @@ If any errors appear, congratulations!  You have an install I have not tested.  
 4. Set a new value for {$APIKEY}, enter your Meraki API Key in the text field
 5. Click the 'Update' button
 
-## Running your first discovery
+## Running Your First Discovery
 Discovery is designed not to burden the Meraki API with a lot of traffic, so it is set at a period of 12h.  You don't have to be this patient, run your first discovery by hand.
 1. In the Zabbix UI, navigate to Configuration > Hosts
 2. Click on host 'Meraki Cloud'
@@ -87,7 +88,7 @@ Discovery is designed not to burden the Meraki API with a lot of traffic, so it 
 
 Running by hand will take a few minutes to complete and about an hour for all SNMP data to start trickling in.
 
-## Monitoring Meraki devices with Interfaces SNMP
+## Monitoring Meraki Devices with Interfaces SNMP
 The templates uses SNMP to monitor individual Meraki devices that support SNMP, it does not use the Meraki Cloud SNMP. You should keep in mind:
 1. Your {$SNMP_COMMUNITY} macro must match the SNMP string you entered into your Meraki Dashboard in [Network-wide > General > Reporting](https://documentation.meraki.com/General_Administration/Monitoring_and_Reporting/SNMP_Overview_and_Configuration#Configuration)
 2. Not all Meraki devices support SNMP, the template attempts to take this into account
