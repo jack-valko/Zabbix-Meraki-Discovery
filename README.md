@@ -35,7 +35,7 @@ The xml contains three objects, a Cloud Template (*Meraki Cloud Service*), a Dev
 After discovery each device will be added to a new hostgroup in the form of *"Meraki Organization Name/Meraki Network Name"*.  Each host is also added to a new hostgroup "Discovered Meraki Devices".
 
 ## Prerequisites
-* Zabbix 5.4, 6.0 Beta
+* Zabbix 5.4, 6.0 Beta 1
 * Template 'ICMP Ping'
 * Template 'Interfaces SNMP'
 * [Your Meraki API Key](https://documentation.meraki.com/General_Administration/Other_Topics/Cisco_Meraki_Dashboard_API#Enable_API_access)
@@ -52,6 +52,8 @@ StartLLDProcessors=5
 ```
 
 ## Zabbix 5.4 and 6.0 Install
+***NOTE: [Template import is broken in 6.0 Beta 2](https://support.zabbix.com/browse/ZBX-20431)***
+
 1. Download [Zabbix-Meraki-Discovery.xml](https://raw.githubusercontent.com/jack-valko/Zabbix-Meraki-Discovery/main/Zabbix-Meraki-Discovery.xml) from this repo
 2. In the Zabbix UI, navigate to Configuration > Templates.  Click Import.
 3. Click the 'Choose File' button and select your download of Zabbix-Meraki-Discovery.xml
