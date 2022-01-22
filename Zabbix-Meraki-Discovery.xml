@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
-    <version>5.2</version>
-    <date>2021-07-30T00:53:00Z</date>
+    <version>5.4</version>
+    <date>2022-01-22T19:12:40Z</date>
     <groups>
         <group>
+            <uuid>2b8af5e536894a68909ac3c8be1cf8f6</uuid>
             <name>Discovered Meraki Devices</name>
         </group>
         <group>
+            <uuid>7df96b18c230490a9a0a9e2307226338</uuid>
             <name>Templates</name>
         </group>
     </groups>
     <templates>
         <template>
+            <uuid>3353cf1c188544db873bc5a8ec9f408d</uuid>
             <template>Meraki Cloud Service</template>
             <name>Meraki Cloud Service</name>
             <groups>
@@ -19,13 +22,9 @@
                     <name>Templates</name>
                 </group>
             </groups>
-            <applications>
-                <application>
-                    <name>Device Info</name>
-                </application>
-            </applications>
             <discovery_rules>
                 <discovery_rule>
+                    <uuid>242a10bf3291439ab1e23229f1d579e5</uuid>
                     <name>Meraki Device Discovery</name>
                     <type>SCRIPT</type>
                     <key>meraki-device-discovery</key>
@@ -35,7 +34,13 @@ var apikey = '{$APIKEY}';
 var request = new CurlHttpRequest();
 var headerString = 'X-Cisco-Meraki-API-Key: ' + apikey;
 request.AddHeader(headerString);
-var resultString = [ ];
+var resultString = '[';
+
+// return empty if no apikey passed in
+if (!apikey) {
+   resultString += ']';
+   return(resultString);
+}
 
 // discover organizations
 var requestString = 'https://api-mp.meraki.com/api/v1/organizations';
@@ -43,18 +48,12 @@ var org_response = request.Get(requestString);
 var org_json = JSON.parse(org_response);
 
 for (var org=0; org&lt;org_json.length; org++) {
-   // load networks array into objects
-   var requestString = 'https://api-mp.meraki.com/api/v1/organizations/' + org_json[org].id + '/networks';
-   var net_response = request.Get(requestString);
-   var net_json = JSON.parse(net_response);
+   // if this org is disabled, move to next org
+   if (org_json[org].api[&quot;enabled&quot;] == &quot;false&quot;) { continue; }
 
-   var networks = [ ];
-   for (var net=0; net&lt;net_json.length; net++) {
-      var net_object = { };
-      net_object[&quot;networkId&quot;] = net_json[net].id;
-      net_object[&quot;name&quot;] = net_json[net].name;
-      networks.push(net_object);
-   }
+   // caches
+   const gateways_index = {};
+   const names_index = {};
 
    // load devices array into objects
    var requestString = 'https://api-mp.meraki.com/api/v1/organizations/' + org_json[org].id + '/devices/statuses';
@@ -63,7 +62,7 @@ for (var org=0; org&lt;org_json.length; org++) {
 
    for (var dev=0; dev&lt;dev_json.length; dev++) {
       // bail if offline
-      if (dev_json[dev].status == &quot;offline&quot;) { continue; }
+      if (dev_json[dev].status != &quot;online&quot;) { continue; }
 
       // create object
       var object = { };
@@ -74,34 +73,26 @@ for (var org=0; org&lt;org_json.length; org++) {
          object[&quot;{#HOSTNAME}&quot;] = dev_json[dev].name.toLowerCase();
       }
       object[&quot;{#SERIAL}&quot;] = dev_json[dev].serial;
-      object[&quot;{#NETWORKID}&quot;] = dev_json[dev].networkId;
       object[&quot;{#ORG}&quot;] = org_json[org].id;
+      object[&quot;{#MODEL}&quot;] = dev_json[dev].model;
 
       // if there is a gateway IP, add it to networks object
       if (dev_json[dev].gateway) {
-         for (var net=0; net&lt;networks.length; net++) {
-            if (networks[net].networkId == dev_json[dev].networkId) {
-               networks[net].lanIp = dev_json[dev].gateway;
-               break;
-            }
-         }
+         gateways_index[dev_json[dev].networkId] = dev_json[dev].gateway;
       }
 
       // if there is no lanIP this is probably an appliance, 
       // grab its IP from the networks object.  
       if (!dev_json[dev].lanIp) {
-         for (var net=0; net&lt;networks.length; net++) {
-            if (networks[net].networkId == dev_json[dev].networkId) {
-               object[&quot;{#LANIP}&quot;] = networks[net].lanIp;
-               break;
-            }
+         if (gateways_index[dev_json[dev].networkId]) {
+            object[&quot;{#LANIP}&quot;] = gateways_index[dev_json[dev].networkId];
          }
       }
       else {
          object[&quot;{#LANIP}&quot;] = dev_json[dev].lanIp;
       }
                         
-      // if there is still no #LANIP this is most likely an MX250
+      // if there is still no #LANIP this is most likely an MX
       // gateway.  Set #LANIP to publicIp.  if #LANIP still
       // can't be found, bail on this device
       if (!object[&quot;{#LANIP}&quot;] &amp;&amp; dev_json[dev].publicIp) {
@@ -110,31 +101,40 @@ for (var org=0; org&lt;org_json.length; org++) {
       if (!object[&quot;{#LANIP}&quot;]) { continue; }
 
       // grab network name from networks
-      for (var net=0; net&lt;networks.length; net++) {
-         if (networks[net].networkId == dev_json[dev].networkId) {
-            object[&quot;{#NETWORKNAME}&quot;] = networks[net].name;
-            break;
-         }
+      if (names_index[dev_json[dev].networkId]) {
+         object[&quot;{#NETWORKNAME}&quot;] = names_index[dev_json[dev].networkId];
       }
-
-      // grab model number
-      var requestString = 'https://api-mp.meraki.com/api/v1/devices/' + dev_json[dev].serial;
-      var device_response = request.Get(requestString);
-      var device_json = JSON.parse(device_response);
-      object[&quot;{#MODEL}&quot;] = device_json.model;
+      else {
+         var requestString = 'https://api-mp.meraki.com/api/v1/organizations/' + org_json[org].id + '/networks/' + dev_json[dev].networkId;
+         var network_response = request.Get(requestString);
+         var network_json = JSON.parse(network_response);
+         object[&quot;{#NETWORKNAME}&quot;] = network_json.name;
+         names_index[dev_json[dev].networkId] = network_json.name;
+      }
 
       // create a hostgroup
       object[&quot;{#HOSTGROUP}&quot;] = org_json[org].name + '/' + object[&quot;{#NETWORKNAME}&quot;];
  
       // add to array 
-      resultString.push(object);
+      // this logic is really inefficient but is required.  attempts to run JSON.stringify
+      // on a large array of objects causes the embedded interpreter to timeout execution on a 
+      // RangeError (it thinks it's in an infinite loop).  Stringifying single objects with
+      // a concatenation is a way to convince the interpreter otherwise
+      // https://github.com/svaarala/duktape/blob/master/doc/sandboxing.rst
+      if (resultString == '[') {
+           resultString += JSON.stringify(object);
+      }
+      else {
+           resultString += ',' + JSON.stringify(object);
+      }
    }
 }
-
-return(JSON.stringify(resultString));</params>
+resultString += ']';
+return(resultString);</params>
                     <lifetime>7d</lifetime>
                     <host_prototypes>
                         <host_prototype>
+                            <uuid>54e8b9181f7643738dc453cf4b9efdbe</uuid>
                             <host>{#HOSTNAME}</host>
                             <name>{#HOSTNAME}</name>
                             <group_links>
@@ -154,9 +154,6 @@ return(JSON.stringify(resultString));</params>
                                     <name>ICMP Ping</name>
                                 </template>
                                 <template>
-                                    <name>Interfaces SNMP</name>
-                                </template>
-                                <template>
                                     <name>Meraki Device</name>
                                 </template>
                             </templates>
@@ -165,11 +162,6 @@ return(JSON.stringify(resultString));</params>
                                     <macro>{$MODEL}</macro>
                                     <value>{#MODEL}</value>
                                     <description>Model Number</description>
-                                </macro>
-                                <macro>
-                                    <macro>{$NETWORKID}</macro>
-                                    <value>{#NETWORKID}</value>
-                                    <description>Network ID</description>
                                 </macro>
                                 <macro>
                                     <macro>{$NETWORKNAME}</macro>
@@ -198,13 +190,52 @@ return(JSON.stringify(resultString));</params>
                                     </details>
                                 </interface>
                             </interfaces>
+                            <inventory_mode>AUTOMATIC</inventory_mode>
                         </host_prototype>
                     </host_prototypes>
-                    <timeout>30s</timeout>
+                    <timeout>60s</timeout>
+                    <overrides>
+                        <override>
+                            <name>Add SNMP Interface Template</name>
+                            <step>1</step>
+                            <filter>
+                                <evaltype>OR</evaltype>
+                                <conditions>
+                                    <condition>
+                                        <macro>{#MODEL}</macro>
+                                        <value>^MX</value>
+                                        <formulaid>A</formulaid>
+                                    </condition>
+                                    <condition>
+                                        <macro>{#MODEL}</macro>
+                                        <value>^MS</value>
+                                        <formulaid>B</formulaid>
+                                    </condition>
+                                    <condition>
+                                        <macro>{#MODEL}</macro>
+                                        <value>^MR</value>
+                                        <formulaid>C</formulaid>
+                                    </condition>
+                                </conditions>
+                            </filter>
+                            <operations>
+                                <operation>
+                                    <operationobject>HOST_PROTOTYPE</operationobject>
+                                    <operator>NOT_EQUAL</operator>
+                                    <templates>
+                                        <template>
+                                            <name>Interfaces SNMP</name>
+                                        </template>
+                                    </templates>
+                                </operation>
+                            </operations>
+                        </override>
+                    </overrides>
                 </discovery_rule>
             </discovery_rules>
         </template>
         <template>
+            <uuid>bff515b70c8b4a5a8be340e6c601c62a</uuid>
             <template>Meraki Device</template>
             <name>Meraki Device</name>
             <groups>
@@ -212,109 +243,246 @@ return(JSON.stringify(resultString));</params>
                     <name>Templates</name>
                 </group>
             </groups>
-            <applications>
-                <application>
-                    <name>Device Info</name>
-                </application>
-            </applications>
             <items>
                 <item>
+                    <uuid>1a01c28f88da46e89ee93a62bb24496f</uuid>
+                    <name>Firmware</name>
+                    <type>HTTP_AGENT</type>
+                    <key>firmware[{$SERIAL}]</key>
+                    <delay>1d</delay>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <description>Firmware version reported by device</description>
+                    <inventory_link>SOFTWARE</inventory_link>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <parameters>
+                                <parameter>$.firmware</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <timeout>10s</timeout>
+                    <url>https://api-mp.meraki.com/api/v1/devices/{$SERIAL}</url>
+                    <headers>
+                        <header>
+                            <name>X-Cisco-Meraki-API-Key</name>
+                            <value>{$APIKEY}</value>
+                        </header>
+                    </headers>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Device Info</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>49a7595db6a7465ab5c58c30bcffed9f</uuid>
+                    <name>Latitude</name>
+                    <type>HTTP_AGENT</type>
+                    <key>latitude[{$SERIAL}]</key>
+                    <delay>1d</delay>
+                    <value_type>FLOAT</value_type>
+                    <description>Latitude reported by device</description>
+                    <inventory_link>LOCATION_LAT</inventory_link>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <parameters>
+                                <parameter>$.lat</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <timeout>10s</timeout>
+                    <url>https://api-mp.meraki.com/api/v1/devices/{$SERIAL}</url>
+                    <headers>
+                        <header>
+                            <name>X-Cisco-Meraki-API-Key</name>
+                            <value>{$APIKEY}</value>
+                        </header>
+                    </headers>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Device Info</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>313cbcca7fda4d14b2d5a5912793be33</uuid>
+                    <name>Longitude</name>
+                    <type>HTTP_AGENT</type>
+                    <key>longitude[{$SERIAL}]</key>
+                    <delay>1d</delay>
+                    <value_type>FLOAT</value_type>
+                    <description>Longitude reported by device</description>
+                    <inventory_link>LOCATION_LON</inventory_link>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <parameters>
+                                <parameter>$.lng</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <timeout>10s</timeout>
+                    <url>https://api-mp.meraki.com/api/v1/devices/{$SERIAL}</url>
+                    <headers>
+                        <header>
+                            <name>X-Cisco-Meraki-API-Key</name>
+                            <value>{$APIKEY}</value>
+                        </header>
+                    </headers>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Device Info</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>680d423eebe242ed8f89cb398d2c2482</uuid>
                     <name>Model Number</name>
-                    <type>EXTERNAL</type>
-                    <key>echo.something[{$MODEL}]</key>
+                    <type>SCRIPT</type>
+                    <key>model[{$SERIAL}]</key>
                     <delay>1d</delay>
                     <trends>0</trends>
                     <value_type>CHAR</value_type>
+                    <params>return '{$MODEL}';</params>
+                    <description>Model number reported by devices discovery</description>
                     <inventory_link>MODEL</inventory_link>
-                    <applications>
-                        <application>
-                            <name>Device Info</name>
-                        </application>
-                    </applications>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Device Info</value>
+                        </tag>
+                    </tags>
                 </item>
                 <item>
-                    <name>Network ID</name>
-                    <type>EXTERNAL</type>
-                    <key>echo.something[{$NETWORKID}]</key>
+                    <uuid>6981ed93c56b4cf49c8c7b59b24b8336</uuid>
+                    <name>Network Name</name>
+                    <type>SCRIPT</type>
+                    <key>network-name[{$NETWORKNAME}]</key>
                     <delay>1d</delay>
                     <trends>0</trends>
                     <value_type>CHAR</value_type>
-                    <applications>
-                        <application>
-                            <name>Device Info</name>
-                        </application>
-                    </applications>
+                    <params>return '{$NETWORKNAME}';</params>
+                    <description>Friendly network name reported by devices discovery</description>
+                    <inventory_link>SITE_NOTES</inventory_link>
+                    <timeout>10s</timeout>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Device Info</value>
+                        </tag>
+                    </tags>
                 </item>
                 <item>
-                    <name>Serial Number</name>
-                    <type>EXTERNAL</type>
-                    <key>echo.something[{$SERIAL}]</key>
+                    <uuid>88af860a42764676a3f84522b2ac3223</uuid>
+                    <name>Serial</name>
+                    <type>SCRIPT</type>
+                    <key>serial[{$SERIAL}]</key>
                     <delay>1d</delay>
                     <trends>0</trends>
                     <value_type>CHAR</value_type>
+                    <params>return '{$SERIAL}';</params>
+                    <description>Serial number reported by devices discovery</description>
                     <inventory_link>SERIALNO_A</inventory_link>
-                    <applications>
-                        <application>
-                            <name>Device Info</name>
-                        </application>
-                    </applications>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Device Info</value>
+                        </tag>
+                    </tags>
                 </item>
                 <item>
+                    <uuid>2c33133593a542048e22eefe614b3f09</uuid>
+                    <name>Street Address</name>
+                    <type>HTTP_AGENT</type>
+                    <key>street-address[{$SERIAL}]</key>
+                    <delay>1d</delay>
+                    <trends>0</trends>
+                    <value_type>CHAR</value_type>
+                    <description>Street address reported by device</description>
+                    <inventory_link>LOCATION</inventory_link>
+                    <preprocessing>
+                        <step>
+                            <type>JSONPATH</type>
+                            <parameters>
+                                <parameter>$.address</parameter>
+                            </parameters>
+                        </step>
+                    </preprocessing>
+                    <timeout>10s</timeout>
+                    <url>https://api-mp.meraki.com/api/v1/devices/{$SERIAL}</url>
+                    <headers>
+                        <header>
+                            <name>X-Cisco-Meraki-API-Key</name>
+                            <value>{$APIKEY}</value>
+                        </header>
+                    </headers>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Device Info</value>
+                        </tag>
+                    </tags>
+                </item>
+                <item>
+                    <uuid>dbf72ee2723c4b4b95aec523f757c253</uuid>
                     <name>Time since last check-in</name>
                     <type>SCRIPT</type>
                     <key>time-last-checkin[{$SERIAL}]</key>
-                    <delay>2m</delay>
+                    <delay>3m</delay>
                     <units>s</units>
                     <params>// get last check-in time
 var apikey = '{$APIKEY}';
 var orgId = '{$ORG}';
 var serial = '{$SERIAL}';
 
-var timeNowSeconds = new Date() / 1000 | 0;
-var checkInTimeSeconds = 0;
-
+// http request
 var request = new CurlHttpRequest();
 var headerString = 'X-Cisco-Meraki-API-Key: ' + apikey;
 request.AddHeader(headerString);
-
-var requestString = 'https://api-mp.meraki.com/api/v1/organizations/' + orgId + '/devices/statuses';
+var requestString = 'https://api-mp.meraki.com/api/v1/organizations/' + orgId + '/devices/statuses?serials[]=' + serial;
 var dev_response = request.Get(requestString);
 var dev_json = JSON.parse(dev_response);
 
-// find lastReportedAt timestamp for this device
-for (var dev=0; dev&lt;dev_json.length; dev++) {
-   // bail if offline
-   if (dev_json[dev].status == 'offline') { continue; }
+// get current time
+var timeNowSeconds = new Date() / 1000 | 0;
+var checkInTimeSeconds = 0;
 
-   if (dev_json[dev].serial == serial) {
-      var checkInString = dev_json[dev].lastReportedAt;
-      checkInTimeSeconds = Date.parse(checkInString) / 1000 | 0;
-      break;
-   }
-}
+// find lastReportedAt timestamp for this device
+if (dev_json[0].status != 'online') { return (0); }
+var checkInString = dev_json[0].lastReportedAt;
+checkInTimeSeconds = Date.parse(checkInString) / 1000 | 0;
 
 // return number of seconds since last check-in
 return(timeNowSeconds - checkInTimeSeconds);</params>
-                    <description>Computed number of seconds to last device check in</description>
-                    <applications>
-                        <application>
-                            <name>Device Info</name>
-                        </application>
-                    </applications>
-                    <timeout>10s</timeout>
+                    <description>Computed number of seconds since last device check in</description>
+                    <timeout>60s</timeout>
+                    <tags>
+                        <tag>
+                            <tag>Application</tag>
+                            <value>Device Info</value>
+                        </tag>
+                    </tags>
                     <triggers>
                         <trigger>
-                            <expression>{last()}&gt;300</expression>
+                            <uuid>9b636a863a624618bb3ea4fd8c40344c</uuid>
+                            <expression>last(/Meraki Device/time-last-checkin[{$SERIAL}])&gt;600</expression>
                             <name>{HOST.HOST} late for check-in</name>
                             <opdata>{ITEM.LASTVALUE1}</opdata>
                             <priority>WARNING</priority>
-                            <description>Device hasn't checked-in for over 5 minutes.</description>
+                            <description>Device hasn't checked-in for over 10 minutes.</description>
                         </trigger>
                     </triggers>
                 </item>
             </items>
             <discovery_rules>
                 <discovery_rule>
+                    <uuid>1a491ae436244b7dbbfb5f83c6757c9c</uuid>
                     <name>Appliance Discovery</name>
                     <type>SCRIPT</type>
                     <key>appliance-discovery</key>
@@ -336,16 +504,12 @@ return(JSON.stringify(returnObject));</params>
                     <description>Create discovered object if this is an appliance</description>
                     <item_prototypes>
                         <item_prototype>
+                            <uuid>2dde6018856f4dd787604817f7b41adc</uuid>
                             <name>Load</name>
                             <type>HTTP_AGENT</type>
                             <key>perfScore[{#DEVICESERIAL}]</key>
                             <delay>5m</delay>
                             <units>%</units>
-                            <applications>
-                                <application>
-                                    <name>Device Info</name>
-                                </application>
-                            </applications>
                             <preprocessing>
                                 <step>
                                     <type>JSONPATH</type>
@@ -354,7 +518,7 @@ return(JSON.stringify(returnObject));</params>
                                     </parameters>
                                 </step>
                             </preprocessing>
-                            <timeout>10s</timeout>
+                            <timeout>60s</timeout>
                             <url>https://api-mp.meraki.com/api/v1/devices/{$SERIAL}/appliance/performance</url>
                             <headers>
                                 <header>
@@ -362,11 +526,34 @@ return(JSON.stringify(returnObject));</params>
                                     <value>{$APIKEY}</value>
                                 </header>
                             </headers>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Appliance Info</value>
+                                </tag>
+                            </tags>
+                            <trigger_prototypes>
+                                <trigger_prototype>
+                                    <uuid>2769dfb1270e4bd08eda225b20fcfd97</uuid>
+                                    <expression>avg(/Meraki Device/perfScore[{#DEVICESERIAL}],10m)&gt;70 and avg(/Meraki Device/perfScore[{#DEVICESERIAL}],10m)&lt;90</expression>
+                                    <name>Elevated Load</name>
+                                    <priority>WARNING</priority>
+                                    <description>Load of device between 70 - 90%</description>
+                                </trigger_prototype>
+                                <trigger_prototype>
+                                    <uuid>46f6f68910b840e68d08028e9ee99af2</uuid>
+                                    <expression>avg(/Meraki Device/perfScore[{#DEVICESERIAL}],10m)&gt;=90</expression>
+                                    <name>High Load</name>
+                                    <priority>AVERAGE</priority>
+                                    <description>Load of device greater than 90%</description>
+                                </trigger_prototype>
+                            </trigger_prototypes>
                         </item_prototype>
                     </item_prototypes>
                     <timeout>10s</timeout>
                 </discovery_rule>
                 <discovery_rule>
+                    <uuid>92c9a57fcece4fc69ff7e8f1bcf069b0</uuid>
                     <name>Cellular Modem Discovery</name>
                     <type>SCRIPT</type>
                     <key>cellular-modem-discovery</key>
@@ -388,17 +575,13 @@ return(JSON.stringify(returnObject));</params>
                     <description>Create discovered object if this is a modem</description>
                     <item_prototypes>
                         <item_prototype>
+                            <uuid>de98522483e044a196cb2be77113ff07</uuid>
                             <name>ICCID</name>
                             <type>HTTP_AGENT</type>
                             <key>iccId[{#DEVICESERIAL}]</key>
                             <delay>1d</delay>
                             <trends>0</trends>
                             <value_type>CHAR</value_type>
-                            <applications>
-                                <application>
-                                    <name>Device Info</name>
-                                </application>
-                            </applications>
                             <preprocessing>
                                 <step>
                                     <type>JSONPATH</type>
@@ -407,7 +590,7 @@ return(JSON.stringify(returnObject));</params>
                                     </parameters>
                                 </step>
                             </preprocessing>
-                            <timeout>10s</timeout>
+                            <timeout>60s</timeout>
                             <url>https://api-mp.meraki.com/api/v1/organizations/{$ORG}/cellularGateway/uplink/statuses</url>
                             <query_fields>
                                 <query_field>
@@ -421,19 +604,21 @@ return(JSON.stringify(returnObject));</params>
                                     <value>{$APIKEY}</value>
                                 </header>
                             </headers>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Cellular Info</value>
+                                </tag>
+                            </tags>
                         </item_prototype>
                         <item_prototype>
+                            <uuid>37c77b33f35d422d835f04e5ed49666e</uuid>
                             <name>Status</name>
                             <type>HTTP_AGENT</type>
                             <key>modemStatus[{#DEVICESERIAL}]</key>
                             <delay>5m</delay>
                             <trends>0</trends>
                             <value_type>CHAR</value_type>
-                            <applications>
-                                <application>
-                                    <name>Device Info</name>
-                                </application>
-                            </applications>
                             <preprocessing>
                                 <step>
                                     <type>JSONPATH</type>
@@ -442,7 +627,7 @@ return(JSON.stringify(returnObject));</params>
                                     </parameters>
                                 </step>
                             </preprocessing>
-                            <timeout>10s</timeout>
+                            <timeout>60s</timeout>
                             <url>https://api-mp.meraki.com/api/v1/organizations/{$ORG}/cellularGateway/uplink/statuses</url>
                             <query_fields>
                                 <query_field>
@@ -456,26 +641,29 @@ return(JSON.stringify(returnObject));</params>
                                     <value>{$APIKEY}</value>
                                 </header>
                             </headers>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Cellular Info</value>
+                                </tag>
+                            </tags>
                             <trigger_prototypes>
                                 <trigger_prototype>
-                                    <expression>{last()}&lt;&gt;&quot;active&quot;</expression>
+                                    <uuid>a22b6afaf6484ba090c04b1238d349ac</uuid>
+                                    <expression>last(/Meraki Device/modemStatus[{#DEVICESERIAL}])&lt;&gt;&quot;active&quot;</expression>
                                     <name>Modem Inactive</name>
                                     <priority>WARNING</priority>
                                 </trigger_prototype>
                             </trigger_prototypes>
                         </item_prototype>
                         <item_prototype>
+                            <uuid>0c9d45d27d5f4956801571a9bf396714</uuid>
                             <name>Provider</name>
                             <type>HTTP_AGENT</type>
                             <key>provider[{#DEVICESERIAL}]</key>
                             <delay>1d</delay>
                             <trends>0</trends>
                             <value_type>CHAR</value_type>
-                            <applications>
-                                <application>
-                                    <name>Device Info</name>
-                                </application>
-                            </applications>
                             <preprocessing>
                                 <step>
                                     <type>JSONPATH</type>
@@ -484,7 +672,7 @@ return(JSON.stringify(returnObject));</params>
                                     </parameters>
                                 </step>
                             </preprocessing>
-                            <timeout>10s</timeout>
+                            <timeout>60s</timeout>
                             <url>https://api-mp.meraki.com/api/v1/organizations/{$ORG}/cellularGateway/uplink/statuses</url>
                             <query_fields>
                                 <query_field>
@@ -498,6 +686,12 @@ return(JSON.stringify(returnObject));</params>
                                     <value>{$APIKEY}</value>
                                 </header>
                             </headers>
+                            <tags>
+                                <tag>
+                                    <tag>Application</tag>
+                                    <value>Cellular Info</value>
+                                </tag>
+                            </tags>
                         </item_prototype>
                     </item_prototypes>
                     <timeout>10s</timeout>
