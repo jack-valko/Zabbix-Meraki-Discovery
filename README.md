@@ -43,7 +43,7 @@ After discovery each device will be added to a new hostgroup in the form of *"Me
 * [Set your {$SNMP_COMMUNITY} macro value in the Zabbix UI](https://www.zabbix.com/documentation/current/en/manual/web_interface/frontend_sections/administration/general#macros) to the same string you entered in the previous step
 
 ## Recommended Zabbix Server Configuration Parameters
-If you have a large meraki fleet of 100+ networks and/or 100+ hosts, you will need to adjust some Zabbix parameters.  Your milage may vary depending on the number of devices in your configuration, in our testing we found these settings worked for a large network of over 200 devices and over 100 networks:
+If you have a large meraki fleet of 100+ networks and/or 100+ hosts, you will need to adjust some Zabbix parameters.  Your milage may vary depending on the number of devices in your configuration, in our testing we found these settings worked for a fleet of over 200 devices and over 100 networks:
 ```
 CacheSize=512M 
 StartPollers=15 
