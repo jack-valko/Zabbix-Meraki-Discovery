@@ -2,6 +2,9 @@
 Monitor all of your Meraki devices with Zabbix using the Meraki API and SNMP.  This template uses the script discovery feature in Zabbix 5.4 and later to perform the heavy lifting against the Meraki Dashboard API to discover your organizations, networks, and devices.
 
 ## What's new
+##### February 5, 2022
+* Verified to work on Zabbix 6.0 RC2
+ 
 ##### January 22, 2022
 * FIX: Improved support for large Meraki networks
 * FIX: SNMP Interfaces template only added to Meraki devices that support SNMP
@@ -35,7 +38,7 @@ The xml contains three objects, a Cloud Template (*Meraki Cloud Service*), a Dev
 After discovery each device will be added to a new hostgroup in the form of *"Meraki Organization Name/Meraki Network Name"*.  Each host is also added to a new hostgroup "Discovered Meraki Devices".
 
 ## Prerequisites
-* Zabbix 5.4, 6.0 Beta 1
+* Zabbix 5.4, 6.0 Beta 1, 6.0 RC 2
 * Template 'ICMP Ping'
 * Template 'Interfaces SNMP'
 * [Your Meraki API Key](https://documentation.meraki.com/General_Administration/Other_Topics/Cisco_Meraki_Dashboard_API#Enable_API_access)
