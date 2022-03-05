@@ -58,7 +58,7 @@ StartLLDProcessors=5
 ```
 
 ## Zabbix 5.4 and 6.0 Install
-***NOTE: [Template import is broken in 6.0 Beta 2](https://support.zabbix.com/browse/ZBX-20431)***
+***NOTE: [Template import is broken in 6.0 Beta 2](https://support.zabbix.com/browse/ZBX-20431) and [6.0.1](https://support.zabbix.com/browse/ZBX-20699)***
 
 1. Download [Zabbix-Meraki-Discovery.xml](https://raw.githubusercontent.com/jack-valko/Zabbix-Meraki-Discovery/main/Zabbix-Meraki-Discovery.xml) from this repo
 2. In the Zabbix UI, navigate to Configuration > Templates.  Click Import.
