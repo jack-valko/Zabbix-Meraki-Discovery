@@ -61,7 +61,7 @@ StartLLDProcessors=5
 ```
 
 ## Install
-1. Download [Zabbix-Meraki-Discovery.xml](https://raw.githubusercontent.com/jack-valko/Zabbix-Meraki-Discovery/main/Zabbix-Meraki-Discovery.xml) for Zabbix 5.4 or [Zabbix-Meraki-Discovery-6.0.xml](https://raw.githubusercontent.com/jack-valko/Zabbix-Meraki-Discovery/main/Zabbix-Meraki-Discovery-6.0.xml) for Zabbix 6.0. 
+1. Download [Zabbix-Meraki-Discovery.xml](https://raw.githubusercontent.com/jack-valko/Zabbix-Meraki-Discovery/main/Zabbix-Meraki-Discovery.xml) for Zabbix 5.4.
 2. In the Zabbix UI, navigate to Configuration > Templates.  Click Import.
 3. Click the 'Choose File' button and select the file downloaded in step 1.
 4. Click the 'Import' button
