@@ -2,8 +2,17 @@
 Monitor all of your Meraki devices with Zabbix using the Meraki API and SNMP.  This template uses the script discovery feature in Zabbix 5.4 and later to perform the heavy lifting against the Meraki Dashboard API to discover your organizations, networks, and devices.
 
 ## What's new
+##### May 26, 2022
+* ENHANCEMENT: Discovery will log errors to zabbix server log
+* ENHANCEMENT: Deprecated old curlHttpRequest()
+* FIX: Discovery verifies API requests return usable data
+* FIX: Discovery now replaces unsupported characters
+
+##### May 24, 2022
+* BUG: [Meraki devices with unsupported characters can't be created](https://github.com/jack-valko/Zabbix-Meraki-Discovery/issues/23)
+
 ##### March 15, 2022
-* BUG: Template import broken in 6.0.2, this template is only known to work on 5.4 production releases at this time
+* BUG: Template import broken in 6.0.1 and later, this template is only known to work on 5.4 production releases at this time
 
 ##### March 5, 2022
 * BUG: [Template import is broken on Zabbix 6.0.1](https://support.zabbix.com/browse/ZBX-20699). Follow [issue #20](https://github.com/jack-valko/Zabbix-Meraki-Discovery/issues/20) for updates.
