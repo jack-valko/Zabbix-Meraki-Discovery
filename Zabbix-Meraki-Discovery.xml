@@ -34,6 +34,8 @@ var apikey = '{$APIKEY}';
 var request = new CurlHttpRequest();
 var headerString = 'X-Cisco-Meraki-API-Key: ' + apikey;
 request.AddHeader(headerString);
+var regex_replace = /\-/gi;
+var regex_match = '(?![\w\s\-\.])';
 var resultString = '[';
 
 // return empty if no apikey passed in
@@ -44,8 +46,16 @@ if (!apikey) {
 
 // discover organizations
 var requestString = 'https://api-mp.meraki.com/api/v1/organizations';
-var org_response = request.Get(requestString);
-var org_json = JSON.parse(org_response);
+try {
+   var org_response = request.get(requestString);
+   if (request.getStatus() &gt;= 200 &amp;&amp; request.getStatus() &lt; 300) {
+      var org_json = JSON.parse(org_response);
+   } else if (request.getStatus &gt;= 400) {
+      throw(&quot;ERROR CODE: &quot; + request.getStatus + &quot; &quot; + requestString);
+   }
+} catch (error) {
+    Zabbix.log(2, 'Meraki-Discovery: '+error);
+}
 
 for (var org=0; org&lt;org_json.length; org++) {
    // if this org is disabled, move to next org
@@ -57,20 +67,29 @@ for (var org=0; org&lt;org_json.length; org++) {
 
    // load devices array into objects
    var requestString = 'https://api-mp.meraki.com/api/v1/organizations/' + org_json[org].id + '/devices/statuses';
-   var dev_response = request.Get(requestString);
-   var dev_json = JSON.parse(dev_response);
+   var paramString = '{&quot;statuses&quot;: [&quot;online&quot;,&quot;alerting&quot;]}';
+   try {
+      var dev_response = request.get(requestString, paramString);
+      if (request.getStatus() &gt;= 200 &amp;&amp; request.getStatus() &lt; 300) {
+         var dev_json = JSON.parse(dev_response);
+      } else if (request.getStatus &gt;= 400) {
+         throw(&quot;ERROR CODE: &quot; + request.getStatus + &quot; &quot; + requestString);
+      }
+   } catch (error) {
+      Zabbix.log(2, 'Meraki-Discovery: '+error);
+   }
 
    for (var dev=0; dev&lt;dev_json.length; dev++) {
-      // bail if offline
-      if (dev_json[dev].status != &quot;online&quot;) { continue; }
-
       // create object
       var object = { };
       if (!dev_json[dev].name) {
          object[&quot;{#HOSTNAME}&quot;] = dev_json[dev].serial;
       }
       else {
-         object[&quot;{#HOSTNAME}&quot;] = dev_json[dev].name.toLowerCase();
+         dev_json[dev].name = dev_json[dev].name.toLowerCase();
+         // replace hostname characters not supported by zabbix
+         dev_json[dev].name = dev_json[dev].name.replace(regex_replace, regex_match); 
+         object[&quot;{#HOSTNAME}&quot;] = dev_json[dev].name;
       }
       object[&quot;{#SERIAL}&quot;] = dev_json[dev].serial;
       object[&quot;{#ORG}&quot;] = org_json[org].id;
@@ -101,16 +120,21 @@ for (var org=0; org&lt;org_json.length; org++) {
       if (!object[&quot;{#LANIP}&quot;]) { continue; }
 
       // grab network name from networks
-      if (names_index[dev_json[dev].networkId]) {
-         object[&quot;{#NETWORKNAME}&quot;] = names_index[dev_json[dev].networkId];
-      }
-      else {
+      if (!names_index[dev_json[dev].networkId]) {
          var requestString = 'https://api-mp.meraki.com/api/v1/organizations/' + org_json[org].id + '/networks/' + dev_json[dev].networkId;
-         var network_response = request.Get(requestString);
-         var network_json = JSON.parse(network_response);
-         object[&quot;{#NETWORKNAME}&quot;] = network_json.name;
-         names_index[dev_json[dev].networkId] = network_json.name;
+         try {
+           var network_response = request.get(requestString);
+           if (request.getStatus() &gt;= 200 &amp;&amp; request.getStatus() &lt; 300) {
+              var network_json = JSON.parse(network_response);
+              names_index[dev_json[dev].networkId] = network_json.name;
+           } else if (request.getStatus &gt;= 400) {
+              throw(&quot;ERROR CODE: &quot; + request.getStatus + &quot; &quot; + requestString);
+           }
+         } catch (error) {
+            Zabbix.log(2, 'Meraki-Discovery: '+error);
+         }        
       }
+      object[&quot;{#NETWORKNAME}&quot;] = names_index[dev_json[dev].networkId];
 
       // create a hostgroup
       object[&quot;{#HOSTGROUP}&quot;] = org_json[org].name + '/' + object[&quot;{#NETWORKNAME}&quot;];
