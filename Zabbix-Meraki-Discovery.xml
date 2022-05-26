@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>5.4</version>
-    <date>2022-01-22T19:12:40Z</date>
+    <date>2022-05-26T16:33:44Z</date>
     <groups>
         <group>
             <uuid>2b8af5e536894a68909ac3c8be1cf8f6</uuid>
@@ -30,19 +30,14 @@
                     <key>meraki-device-discovery</key>
                     <delay>12h</delay>
                     <params>// globals
-var apikey = '{$APIKEY}';
-var request = new CurlHttpRequest();
-var headerString = 'X-Cisco-Meraki-API-Key: ' + apikey;
-request.AddHeader(headerString);
-var regex_replace = /\-/gi;
-var regex_match = '(?![\w\s\-\.])';
+var apikey = '{$APIKEY}'; if (!apikey) { return('[ ]'); }
+var request = new HttpRequest();
+var authString = 'X-Cisco-Meraki-API-Key: ' + apikey;
+request.addHeader(authString);
+var contentString = 'Content-Type: application/json';
+request.addHeader(contentString);
+var regex_match = /((?![\w\s\-\.]).)/g;
 var resultString = '[';
-
-// return empty if no apikey passed in
-if (!apikey) {
-   resultString += ']';
-   return(resultString);
-}
 
 // discover organizations
 var requestString = 'https://api-mp.meraki.com/api/v1/organizations';
@@ -88,7 +83,7 @@ for (var org=0; org&lt;org_json.length; org++) {
       else {
          dev_json[dev].name = dev_json[dev].name.toLowerCase();
          // replace hostname characters not supported by zabbix
-         dev_json[dev].name = dev_json[dev].name.replace(regex_replace, regex_match); 
+         dev_json[dev].name = dev_json[dev].name.replace(regex_match, &quot;-&quot;); 
          object[&quot;{#HOSTNAME}&quot;] = dev_json[dev].name;
       }
       object[&quot;{#SERIAL}&quot;] = dev_json[dev].serial;
@@ -117,7 +112,10 @@ for (var org=0; org&lt;org_json.length; org++) {
       if (!object[&quot;{#LANIP}&quot;] &amp;&amp; dev_json[dev].publicIp) {
          object[&quot;{#LANIP}&quot;] = dev_json[dev].publicIp;
       }
-      if (!object[&quot;{#LANIP}&quot;]) { continue; }
+      if (!object[&quot;{#LANIP}&quot;]) { 
+         Zabbix.log(2, 'Meraki-Discovery: ' + dev_json[dev].name + ' IP address undiscoverable');
+         continue; 
+      }
 
       // grab network name from networks
       if (!names_index[dev_json[dev].networkId]) {
@@ -466,12 +464,23 @@ var orgId = '{$ORG}';
 var serial = '{$SERIAL}';
 
 // http request
-var request = new CurlHttpRequest();
-var headerString = 'X-Cisco-Meraki-API-Key: ' + apikey;
-request.AddHeader(headerString);
+var request = new HttpRequest();
+var authString = 'X-Cisco-Meraki-API-Key: ' + apikey;
+request.addHeader(authString);
+var contentString = 'Content-Type: application/json';
+request.addHeader(contentString);
+
 var requestString = 'https://api-mp.meraki.com/api/v1/organizations/' + orgId + '/devices/statuses?serials[]=' + serial;
-var dev_response = request.Get(requestString);
-var dev_json = JSON.parse(dev_response);
+try {
+   var dev_response = request.get(requestString);
+   if (request.getStatus() &gt;= 200 &amp;&amp; request.getStatus() &lt; 300) {
+      var dev_json = JSON.parse(dev_response);
+   } else if (request.getStatus &gt;= 400) {
+      throw(&quot;ERROR CODE: &quot; + request.getStatus + &quot; &quot; + requestString);
+   }
+} catch (error) {
+    Zabbix.log(2, 'Meraki-Discovery: '+error);
+}
 
 // get current time
 var timeNowSeconds = new Date() / 1000 | 0;
