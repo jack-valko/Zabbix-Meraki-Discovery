@@ -30,19 +30,12 @@ Monitor all of your Meraki devices with Zabbix using the Meraki API and SNMP.  T
 * Verified to work on Zabbix 6.0 Beta 1
 * Support for Zabbix 5.2 has been dropped
 
-##### December 4, 2021
+##### 2021
 * BUG: SNMP Interfaces template is overdeployed (issue #11), verified, fix in development
 * BUG: Template can't discover very large meraki organizations due to RangeError (issue #12 and #16), verified, fix in development
-
-##### November 28, 2021
-* Verified working on Zabbix 6 Alpha 7 
-
-##### July 30, 2021
-* Attempted bug fix for issue #3, cannot read property 'toLowerCase' of null 
-
-##### June 29, 2021
-* Now discovers MX250 gateways
-* Alerts if a Meraki device hasn't checked into the API for over 5 minutes
+* FIX: Attempted bug fix for issue #3, cannot read property 'toLowerCase' of null 
+* ENHANCEMENT: Now discovers MX250 gateways
+* ENHANCEMENT: Alerts if a Meraki device hasn't checked into the API for over 5 minutes
 
 ## What's Inside
 The xml contains three objects, a Cloud Template (*Meraki Cloud Service*), a Device Template (*Meraki Device*), and a Host (*Meraki Cloud*).
