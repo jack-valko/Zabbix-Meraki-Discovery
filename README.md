@@ -2,6 +2,9 @@
 Monitor all of your Meraki devices with Zabbix using the Meraki API and SNMP.  This template uses the script discovery feature in Zabbix 5.4 and later to perform the heavy lifting against the Meraki Dashboard API to discover your organizations, networks, and devices.
 
 ## What's new
+##### May 27, 2022
+* NEWS: Fix for template import error on 6.0 now [scheduled for the 6.0.6 release](https://support.zabbix.com/browse/ZBX-20699) (July 2022)
+
 ##### May 26, 2022
 * ENHANCEMENT: Discovery will log errors to zabbix server log
 * ENHANCEMENT: Deprecated old curlHttpRequest()
