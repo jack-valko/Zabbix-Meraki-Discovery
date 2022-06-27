@@ -3,7 +3,7 @@ Monitor all of your Meraki devices with Zabbix using the Meraki API and SNMP.  T
 
 ## What's new
 ##### May 27, 2022
-* NEWS: Fix for template import error on 6.0 now [scheduled for the 6.0.6 release](https://support.zabbix.com/browse/ZBX-20699) (July 2022)
+* NEWS: Fix for template import error on 6.0 now [scheduled for the 6.0.7 release](https://support.zabbix.com/browse/ZBX-20699) (late July 2022)
 
 ##### May 26, 2022
 * ENHANCEMENT: Discovery will log errors to zabbix server log
